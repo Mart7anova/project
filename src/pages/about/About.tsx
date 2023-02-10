@@ -1,7 +1,7 @@
-import {useTranslation} from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 const About = () => {
-    const {t, i18n} = useTranslation('about')
+    const { t, i18n } = useTranslation('about');
 
     return (
         <div>

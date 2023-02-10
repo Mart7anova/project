@@ -5,6 +5,42 @@ import {BuildOptions} from "./types/config";
 export function buildLoaders(options: BuildOptions): webpack.RuleSetRule[] {
     const {isDev} = options
 
+    const svgLoader = {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+    }
+
+    const fileLoader = {
+        test: /\.(png|jpe?g|gif|woff2|woff)$/i,
+        use: [
+            {
+                loader: 'file-loader',
+            },
+        ],
+    }
+
+    const babelLoader = {
+        test: /\.(js|jsx|ts|tsx)$/,
+        exclude: /node_modules/,
+        use: {
+            loader: 'babel-loader',
+            options: {
+                presets: ['@babel/preset-env'],
+                plugins: [
+                    [
+                        'i18next-extract',
+                        {
+                            locales: ['ru', 'en'],
+                            keyAsDefaultValue: false,
+                            saveMissing: true,
+                            outputPath: 'public/locales/{{locale}}/{{ns}}.json',
+                        },
+                    ],
+                ],
+            },
+        },
+    };
+
     const typescriptLoader = {
         test: /\.tsx?$/,
         use: 'ts-loader',
@@ -17,7 +53,7 @@ export function buildLoaders(options: BuildOptions): webpack.RuleSetRule[] {
             isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
             {
                 loader: "css-loader",
-                options:{
+                options: {
                     modules: {
                         auto: (resPath: string) => Boolean(resPath.includes('.module.')),
                         localIdentName: isDev
@@ -30,23 +66,10 @@ export function buildLoaders(options: BuildOptions): webpack.RuleSetRule[] {
         ],
     }
 
-    const svgLoader = {
-        test: /\.svg$/,
-        use: [ '@svgr/webpack'],
-    }
-
-    const fileLoader = {
-        test: /\.(png|jpe?g|gif|woff2|woff)$/i,
-        use: [
-            {
-                loader: 'file-loader',
-            },
-        ],
-    }
-
     return [
         svgLoader,
         fileLoader,
+        babelLoader,
         typescriptLoader,
         cssLoader,
     ]
